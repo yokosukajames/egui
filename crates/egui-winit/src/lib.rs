@@ -2339,8 +2339,20 @@ impl State {
                     consumed: false,
                 }
             }
+            WindowEvent::HoveredFileMoved(pos_in_pixels) => {
+                let pixels_per_point = pixels_per_point(&self.egui_ctx, window);
+                self.egui_input.file_drag_pos = Some(egui::pos2(
+                    pos_in_pixels.x as f32 / pixels_per_point,
+                    pos_in_pixels.y as f32 / pixels_per_point,
+                ));
+                EventResponse {
+                    repaint: true,
+                    consumed: false,
+                }
+            }
             WindowEvent::HoveredFileCancelled => {
                 self.egui_input.hovered_files.clear();
+                self.egui_input.file_drag_pos = None;
                 EventResponse {
                     repaint: true,
                     consumed: false,
@@ -5106,6 +5118,7 @@ pub fn short_window_event_description(event: &winit::event::WindowEvent) -> &'st
         WindowEvent::Destroyed => "WindowEvent::Destroyed",
         WindowEvent::DroppedFile { .. } => "WindowEvent::DroppedFile",
         WindowEvent::HoveredFile { .. } => "WindowEvent::HoveredFile",
+        WindowEvent::HoveredFileMoved { .. } => "WindowEvent::HoveredFileMoved",
         WindowEvent::HoveredFileCancelled => "WindowEvent::HoveredFileCancelled",
         WindowEvent::Focused { .. } => "WindowEvent::Focused",
         WindowEvent::KeyboardInput { .. } => "WindowEvent::KeyboardInput",
